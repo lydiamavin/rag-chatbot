@@ -1,4 +1,5 @@
 import numpy as np
+import faiss
 from sentence_transformers import SentenceTransformer
 from transformers import pipeline
 from src.vectorstore import load_faiss_index
