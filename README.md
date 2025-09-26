@@ -22,12 +22,6 @@ The application follows a modular RAG pipeline:
 4. **Query** (`src/query.py`): Embeds user queries, retrieves relevant chunks, and generates answers.
 5. **UI** (`app/streamlit_app.py`): Provides a chat interface for user interaction.
 
-## Installation
-
-### Prerequisites
-- Python 3.8+
-- Virtual environment (recommended)
-
 ### Setup
 1. Clone the repository:
    ```bash
