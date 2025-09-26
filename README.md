@@ -1,3 +1,15 @@
+---
+title: RAG Chatbot
+emoji: 🤖
+colorFrom: blue
+colorTo: green
+sdk: streamlit
+sdk_version: "1.30.0"
+app_file: app/streamlit_app.py
+pinned: true
+---
+
+
 # RAG Chatbot
 
 A Retrieval-Augmented Generation (RAG) chatbot that enables interactive conversations with PDF documents. Upload PDFs, process them, and ask questions in a chat interface powered by advanced NLP models.
