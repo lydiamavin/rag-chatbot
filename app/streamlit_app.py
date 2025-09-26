@@ -13,63 +13,94 @@ from src.query import answer_question
 
 st.title("RAG Chatbot")
 
-# File uploader for PDFs
-uploaded_files = st.file_uploader("Upload PDF(s)", type="pdf", accept_multiple_files=True)
+# Initialize session state
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+if "processed" not in st.session_state:
+    st.session_state.processed = False
 
-if uploaded_files:
-    st.success(f"Uploaded {len(uploaded_files)} PDF(s)")
+# Sidebar for PDF upload and processing
+with st.sidebar:
+    st.header("Upload & Process PDFs")
+    uploaded_files = st.file_uploader("Upload PDF(s)", type="pdf", accept_multiple_files=True)
 
-    # Process button
-    if st.button("Process PDFs"):
-        with st.spinner("Processing PDFs..."):
-            # Create data directory if not exists
-            os.makedirs("data", exist_ok=True)
+    if uploaded_files and not st.session_state.processed:
+        st.success(f"Uploaded {len(uploaded_files)} PDF(s)")
 
-            all_text = ""
-            for uploaded_file in uploaded_files:
-                # Save to temp file
-                with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
-                    tmp_file.write(uploaded_file.read())
-                    tmp_path = tmp_file.name
+        if st.button("Process PDFs"):
+            with st.spinner("Processing PDFs..."):
+                # Create data directory if not exists
+                os.makedirs("data", exist_ok=True)
 
-                # Ingest
-                json_path = f"data/chunks_{uploaded_file.name}.json"
-                ingest_pdf(tmp_path, json_path)
+                all_text = ""
+                for uploaded_file in uploaded_files:
+                    # Save to temp file
+                    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
+                        tmp_file.write(uploaded_file.read())
+                        tmp_path = tmp_file.name
 
-                # Load chunks and append text
-                from src.embed import load_chunks
-                chunks = load_chunks(json_path)
-                all_text += " ".join(chunks) + " "
+                    # Ingest
+                    json_path = f"data/chunks_{uploaded_file.name}.json"
+                    ingest_pdf(tmp_path, json_path)
 
-                # Clean up temp
-                os.unlink(tmp_path)
+                    # Load chunks and append text
+                    from src.embed import load_chunks
+                    chunks = load_chunks(json_path)
+                    all_text += " ".join(chunks) + " "
 
-            # Now, chunk the combined text
-            from src.ingest import chunk_text, save_chunks_to_json
-            combined_chunks = chunk_text(all_text)
-            combined_json = "data/combined_chunks.json"
-            save_chunks_to_json(combined_chunks, combined_json)
+                    # Clean up temp
+                    os.unlink(tmp_path)
 
-            # Embed
-            embeddings_path = "data/embeddings.npy"
-            create_embeddings(combined_json, embeddings_path)
+                # Now, chunk the combined text
+                from src.ingest import chunk_text, save_chunks_to_json
+                combined_chunks = chunk_text(all_text)
+                combined_json = "data/combined_chunks.json"
+                save_chunks_to_json(combined_chunks, combined_json)
 
-            # Build index
-            index_path = "data/index.faiss"
-            create_and_save_index(embeddings_path, index_path)
+                # Embed
+                embeddings_path = "data/embeddings.npy"
+                create_embeddings(combined_json, embeddings_path)
 
-            st.success("Processing complete! You can now ask questions.")
+                # Build index
+                index_path = "data/index.faiss"
+                create_and_save_index(embeddings_path, index_path)
 
-# Question input
-question = st.text_input("Ask a question about the uploaded PDFs")
+                st.session_state.processed = True
+                st.success("Processing complete! You can now chat.")
 
-if st.button("Ask"):
-    if not os.path.exists("data/index.faiss"):
+    if st.session_state.processed:
+        st.info("PDFs processed. Ready to chat!")
+
+# Main chat interface
+st.header("Chat with your PDFs")
+
+# Display chat messages
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+        if message["role"] == "assistant" and "sources" in message:
+            with st.expander("Sources"):
+                for i, source in enumerate(message["sources"]):
+                    st.write(f"{i+1}. {source[:200]}...")
+
+# Chat input
+if prompt := st.chat_input("Ask a question about the uploaded PDFs"):
+    if not st.session_state.processed:
         st.error("Please upload and process PDFs first.")
     else:
-        with st.spinner("Generating answer..."):
-            answer, sources = answer_question(question, "data/index.faiss", "data/combined_chunks.json")
-            st.write("**Answer:**", answer)
-            st.write("**Sources:**")
-            for i, source in enumerate(sources):
-                st.write(f"{i+1}. {source[:200]}...")  # Show first 200 chars
+        # Add user message to chat history
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        # Generate response
+        with st.chat_message("assistant"):
+            with st.spinner("Generating answer..."):
+                answer, sources = answer_question(prompt, "data/index.faiss", "data/combined_chunks.json")
+                st.markdown(answer)
+                with st.expander("Sources"):
+                    for i, source in enumerate(sources):
+                        st.write(f"{i+1}. {source[:200]}...")
+
+        # Add assistant message to chat history
+        st.session_state.messages.append({"role": "assistant", "content": answer, "sources": sources})
