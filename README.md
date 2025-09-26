@@ -31,14 +31,14 @@ The application follows a modular RAG pipeline:
 ### Setup
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/lydiamavin/rag-chatbot.git
    cd rag-chatbot
    ```
 
 2. Create and activate a virtual environment:
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   source venv/bin/activate 
    ```
 
 3. Install dependencies:
@@ -53,7 +53,7 @@ The application follows a modular RAG pipeline:
    streamlit run app/streamlit_app.py
    ```
 
-2. Open your browser to the provided URL (usually `http://localhost:8501`).
+2. Open your browser to the provided URL.
 
 3. In the sidebar:
    - Upload one or more PDF files.
@@ -65,8 +65,8 @@ The application follows a modular RAG pipeline:
 
 ### Example
 - Upload a PDF about machine learning.
-- Ask: "What is supervised learning?"
-- Receive an answer with relevant excerpts from the document.
+- Ask Questions
+- Receive answers with relevant excerpts from the document.
 
 ## Configuration
 
@@ -80,27 +80,6 @@ Run tests with pytest:
 ```bash
 pytest tests/
 ```
-
-Current tests cover vectorstore functionality. Expand as needed.
-
-## Contributing
-
-1. Fork the repository.
-2. Create a feature branch: `git checkout -b feature-name`.
-3. Make changes and add tests.
-4. Run linting: `ruff check .` (if configured).
-5. Commit and push: `git push origin feature-name`.
-6. Open a pull request.
-
-### Code Standards
-- Use type hints where possible.
-- Follow PEP 8 style.
-- Add docstrings to functions.
-- Ensure tests pass before submitting.
-
-## License
-
-[MIT License](LICENSE) - Feel free to use and modify.
 
 ## Acknowledgments
 
