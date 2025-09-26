@@ -14,6 +14,12 @@ pinned: true
 
 A Retrieval-Augmented Generation (RAG) chatbot that enables interactive conversations with PDF documents. Upload PDFs, process them, and ask questions in a chat interface powered by advanced NLP models.
 
+![Python](https://img.shields.io/badge/python-3.10-blue?logo=python&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-1.30-orange?logo=streamlit&logoColor=white)
+![HuggingFace](https://img.shields.io/badge/Deployed%20on-HF%20Spaces-ff69b4?logo=huggingface&logoColor=white)
+
+🚀 **Deployed & Live:** [Hugging Face Spaces](https://huggingface.co/spaces/lydiaavin/rag-chatbot)
+
 ## Features
 
 - **PDF Ingestion**: Extract and chunk text from PDF documents using pdfplumber.
