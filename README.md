@@ -80,6 +80,8 @@ The application follows a modular RAG pipeline:
 - Ask Questions
 - Receive answers with relevant excerpts from the document.
 
+<img width="1680" height="960" alt="chatbot_ss" src="https://github.com/user-attachments/assets/34a72160-ad75-4dee-ac6a-bbb72d4fc73f" />
+
 ## Configuration
 
 - **Models**: Default embedding model is `all-MiniLM-L6-v2`. Generation model is `google/flan-t5-small`. Modify in source code for customization.
